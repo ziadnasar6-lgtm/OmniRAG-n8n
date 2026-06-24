@@ -1,0 +1,581 @@
+{
+  "name": "Full_rag_System_V2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1AgEJKAEuZ7QUdl0Xzf9ACOtZ69dWY7UT",
+          "mode": "list",
+          "cachedResultName": "Apple_two",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1AgEJKAEuZ7QUdl0Xzf9ACOtZ69dWY7UT"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        -560
+      ],
+      "id": "6e6215be-b5fd-4d56-bf77-ff44e3f89504",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "oPTbVU5f72G07HH8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1328,
+        -592
+      ],
+      "id": "d5d1596a-ed1e-4aa7-910a-3c99ed377923",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "oPTbVU5f72G07HH8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nragv2",
+          "mode": "list",
+          "cachedResultName": "n8nragv2"
+        },
+        "embeddingBatchSize": 2,
+        "options": {
+          "pineconeNamespace": "N8N_rag_V2"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -1040,
+        -560
+      ],
+      "id": "c759c449-66b5-4e78-8816-40b6aa3d2a59",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "yxPc3qMkMvaUrijp",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "N8N_rag_V2"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -928,
+        -304
+      ],
+      "id": "ea2eefe0-f8f8-4187-a8ab-0c217eac7add",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        -288
+      ],
+      "id": "bfbf19ba-4466-483e-95c9-0fa4cd368a2d",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "gjFRQLOqRu6k3Fz8",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# base Knowladge \n",
+        "height": 512,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1824,
+        -640
+      ],
+      "id": "f37cc386-b015-4abb-9461-e81b3ab78d41",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Chat_bot_ragSystem\n\n",
+        "height": 800,
+        "width": 1040
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -560
+      ],
+      "id": "6c09857e-84f4-4b1c-b586-35c011eaff78",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are a financial expert assistant for Apple Inc. Answer the user's questions accurately based ONLY on the attached vector store tool data (Q2 Financial Statements). If the information is not in the document, politely say that you don't have this information."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -192,
+        -480
+      ],
+      "id": "37ea2cb2-951b-4cee-a475-d220cf3103fd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -192
+      ],
+      "id": "d475f86c-3d41-40e9-b9c6-fb7c5def07f1",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "gjFRQLOqRu6k3Fz8",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.text }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -272,
+        -192
+      ],
+      "id": "f868a408-3171-45c6-af58-db7672ebb08b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "This tool contains the Q2 Consolidated Financial Statements for Apple Inc. Use it to retrieve financial data, balance sheets, revenue, net income, and official financial metrics for Apple's second quarter.",
+        "topK": 5
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        -208
+      ],
+      "id": "1d8848e8-0034-48a8-8932-38e2cc3aadda",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        160,
+        48
+      ],
+      "id": "ae021b57-21c5-4e32-b98d-61d103cdb2a2",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "gjFRQLOqRu6k3Fz8",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        -176,
+        -16
+      ],
+      "id": "e687da19-bc49-4420-9316-c786b76ebf47",
+      "name": "Simple Vector Store"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        64
+      ],
+      "id": "07d22fe0-5a93-4a2f-9181-819f5302aa40",
+      "name": "Embeddings Ollama1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "gjFRQLOqRu6k3Fz8",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -512,
+        -432
+      ],
+      "id": "d06a0a62-85d0-4c32-b7fb-43035a61cbda",
+      "name": "Telegram Trigger",
+      "webhookId": "602ddf3d-5b50-4386-801d-dd7be070e76f",
+      "credentials": {
+        "telegramApi": {
+          "id": "QQ6iBSLOoP2rQp2y",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $items(\"AI Agent\")[0].json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        -352
+      ],
+      "id": "df5c5fb1-0eb0-495e-b86e-df10a4e1a37d",
+      "name": "Send a text message",
+      "webhookId": "e3945b53-f867-4c41-b856-7ddff5548614",
+      "credentials": {
+        "telegramApi": {
+          "id": "QQ6iBSLOoP2rQp2y",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1744,
+        -384
+      ],
+      "id": "e4dca65f-ca61-43b2-a803-84652a1f970d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1AgEJKAEuZ7QUdl0Xzf9ACOtZ69dWY7UT",
+            "mode": "list",
+            "cachedResultName": "Apple_two",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1AgEJKAEuZ7QUdl0Xzf9ACOtZ69dWY7UT"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1536,
+        -288
+      ],
+      "id": "43dc2121-709c-4078-a573-935d01c2716b",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "oPTbVU5f72G07HH8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1312,
+        -400
+      ],
+      "id": "8e90a65b-965d-4fae-9dfd-130132dc038e",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "oPTbVU5f72G07HH8",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "cc655795-a5b4-4040-89eb-0921d17229d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1683654809315c19d0a840f8124382572658b780e6471abee7e4b55976cd39e6"
+  },
+  "nodeGroups": [],
+  "id": "Xfh71iGGnrn2aCkj",
+  "tags": []
+}
