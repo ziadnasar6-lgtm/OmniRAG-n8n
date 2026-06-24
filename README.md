@@ -6,7 +6,7 @@ A self-hosted, production-ready RAG system built on n8n that automates Google Dr
 
 A production-ready, self-hosted **Retrieval-Augmented Generation (RAG)** system built entirely using **n8n**. This workflow automates the entire lifecycle of a knowledge base: from dynamically ingesting documents out of Google Drive to serving intelligent context-aware responses via a Telegram AI Agent using open-source local LLMs. 🚀
 
-![Project Demo](OmniRAG-n8n/blob/main/fotos/rag.gif)
+![Project Demo](https://github.com/ziadnasar6-lgtm/OmniRAG-n8n/blob/main/fotos/rag.gif)
 
 ---
 
